@@ -35,5 +35,14 @@ The kit has no app UI. What users see is the **docs**, the **terminal output** o
 
 Motion pages must be deterministic: they draw from `window.seek(t)` alone, with no timers or `requestAnimationFrame`.
 
+## Captions (`remotion/src/Captions.tsx`)
+| Token | Value |
+|---|---|
+| Text | `#fff`, weight 800, 8.5% of frame width, line height 1.15 |
+| Active word | `#ff4d2e` |
+| Legibility | black stroke 0.6% of width, shadow `0 4px 18px rgba(0,0,0,.55)` |
+| Position | centered, 86% of width, 22% from the bottom (clear of platform UI) |
+| Motion | a page pops in from 90% scale with a short spring; words light up in time |
+
 ## Plugin icon (`.claude-plugin/icon.png`)
 A 1024×1024 waveform on `#0d0d10`: white bars on the left, `#bbb` bars on the right, and one `#ff4d2e` cut line in the middle. It shows the kit's core idea, a cut landing on the beat.

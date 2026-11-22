@@ -7,6 +7,7 @@ Under section 4(d) of that license, any redistribution or derivative work must
 keep this NOTICE file, including the attribution above.
 
 Third-party tools: the kit calls yt-dlp, PySceneDetect, librosa, faster-whisper,
-Demucs, FFmpeg (via imageio-ffmpeg), Puppeteer and Blender. None of them is bundled
+Demucs, FFmpeg (via imageio-ffmpeg), Puppeteer, Blender and, optionally, Remotion
+(Remotion License: https://www.remotion.dev/docs/license). None of them is bundled
 in this repository; each is installed from its official source and keeps its own license.
 Google Flow and any voice-cloning service are used under their own terms.

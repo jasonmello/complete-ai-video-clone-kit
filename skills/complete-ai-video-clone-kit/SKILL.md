@@ -40,8 +40,18 @@ Voice/music split: `bash $S/separate.sh <project>` (Demucs). The first run downl
 ## 3. Assets
 - **Images, Google Flow (labs.google/flow):** a web service with nothing to install. Write `03_assets/prompts.md` with one prompt per shot, based on that shot's frame and duration. Start every prompt with the same style line, so the images stay consistent, and give the aspect ratio. The user generates the images and saves them as `03_assets/images/shot_XX.png`. Never automate Flow (or any other Google service) with a browser bot: the user generates by hand, which keeps their account inside Google's terms.
 - **3D, Blender:** `blender -b -P $S/blender_turntable.py -- model.glb 03_assets/3d/turntable 4 30 1080 1920` renders a 360° turn to transparent PNGs. For custom scenes, write another `bpy` script in the same style.
-- **Motion, Puppeteer:** write an HTML page that exposes `window.seek(t)` (t in seconds) and draws that instant without timers. Then run `node $S/motion.mjs page.html 03_assets/motion/title.mp4 --dur 2 --fps 30 --w 1080 --h 1920`. Add `--alpha` for a transparent ProRes `.mov`. Starting point: `$S/motion_example.html`.
+- **Motion, Remotion (optional, preferred when installed):** `node $S/remotion.mjs title <project> --title "Text" --subtitle "Text" --dur 2 [--transparent]` renders the title composition at the size and fps in `plan.json`. For custom motion, add a composition in `remotion/src/` (see the `remotion-best-practices` skill) and preview it with `node $S/remotion.mjs studio`. Check `doctor.sh`: if Remotion isn't installed, use Puppeteer.
+- **Motion, Puppeteer (no extra install):** write an HTML page that exposes `window.seek(t)` (t in seconds) and draws that instant without timers. Then run `node $S/motion.mjs page.html 03_assets/motion/title.mp4 --dur 2 --fps 30 --w 1080 --h 1920`. Add `--alpha` for a transparent ProRes `.mov`. Starting point: `$S/motion_example.html`.
 - **Cloned voice (any voice-cloning tool):** only the user's own voice, or a voice whose owner gave written consent. Never clone a real person's voice without consent. Save the result to `03_assets/voice/`.
+
+## 3b. Captions on screen (optional, Remotion)
+Word-by-word animated captions as a transparent layer. Captions must follow the *final* audio, so the order is:
+1. Assemble once without overlays.
+2. Transcribe the result: `uv run $S/analyze.py <project> --video 04_render/final.mp4`.
+3. Run `node $S/remotion.mjs captions <project>`, which reads that transcript (or `--transcript file`) and writes `03_assets/captions/captions.mov`. Use `--words-per-page 1200` for more or fewer words per page and `--offset s` to shift the timing.
+4. Add the file to `overlays` and assemble again (assembly is fast).
+
+**Remotion license:** free for individuals and companies of up to 3 people. Larger companies need a paid license, even when an individual makes videos *for* that company. Ask the user before using Remotion on company work. If they have a key, set `REMOTION_LICENSE_KEY` (or `free-license` if they qualify).
 
 ## 4. Plan: `plan.json`
 Write it from `map.json`: one clip per reference shot, with the shot's duration (or nudged onto the beat). Cuts that land on the beat are what make it feel edited.
@@ -58,10 +68,14 @@ Write it from `map.json`: one clip per reference shot, with the shot's duration 
     {"file": "music.mp3", "volume": 0.8},
     {"file": "03_assets/voice/narration.wav", "at": 0.5, "volume": 1.0, "voice": true}
   ],
+  "overlays": [
+    {"file": "03_assets/captions/captions.mov", "at": 0}
+  ],
   "audio_fade": 0.5
 }
 ```
 - `move` (images only) accepts `zoom_in`, `zoom_out`, `pan_left`, `pan_right` or `none`. `start` (videos) is the in-point in the source file.
+- Overlays: transparent `.mov` layers (captions, titles) composited on top of the edit, in order. `at` is the start time.
 - Audio: `at` places the track on the timeline and `skip` trims its beginning. Tracks with `"voice": true` duck the others while they play. Paths are relative to the project folder.
 
 ## 5. Assembly

@@ -28,7 +28,7 @@ jobs:
           S=skills/complete-ai-video-clone-kit/scripts
           for f in $S/*.sh tests/*.sh; do bash -n "$f"; done
           python3 -m py_compile $S/*.py tests/*.py
-          node --check $S/motion.mjs
+          node --check $S/motion.mjs && node --check $S/remotion.mjs
           python3 -c "import json,glob; [json.load(open(f)) for f in glob.glob('.claude-plugin/*.json') + glob.glob('$S/package.json')]"
 
       - name: Docs cite only paths that exist
@@ -36,6 +36,26 @@ jobs:
 
       - name: Smoke test (assemble + analyze)
         run: bash tests/smoke.sh
+
+  remotion:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: skills/complete-ai-video-clone-kit/remotion
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install --no-fund --no-audit
+      - run: npx tsc --noEmit
+      - run: npx remotion browser ensure
+      - name: Render captions from a fixture transcript
+        run: |
+          OUT="$GITHUB_WORKSPACE/tests/_out/ci_captions.mov"
+          node ../scripts/remotion.mjs captions "$GITHUB_WORKSPACE/tests/fixtures/remotion" --out "$OUT"
+          test -s "$OUT"
 
   secrets:
     runs-on: ubuntu-latest

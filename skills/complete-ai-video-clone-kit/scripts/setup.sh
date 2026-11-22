@@ -1,5 +1,6 @@
 #!/bin/bash
 # Installs everything that can be installed without sudo. Downloads a few hundred MB.
+# usage: setup.sh [--remotion]   (--remotion adds the optional Remotion layer; see its license in the README)
 set -e
 DIR="$(cd "$(dirname "$0")" && pwd)"
 command -v uv >/dev/null || { echo "Install uv first: curl -LsSf https://astral.sh/uv/install.sh | sh"; exit 1; }
@@ -21,5 +22,10 @@ echo "→ puppeteer"
 cd "$DIR"
 if [ -d "/Applications/Google Chrome.app" ] || [ -n "$CHROME_PATH" ]; then npm install --no-fund --no-audit puppeteer-core@24
 else npm install --no-fund --no-audit puppeteer@24; fi
+
+if [ "${1:-}" = "--remotion" ]; then
+  echo "→ Remotion (optional layer: animated captions and titles)"
+  (cd "$DIR/../remotion" && npm install --no-fund --no-audit && npx remotion browser ensure)
+fi
 
 echo "Done. Demucs and the Whisper model download on first use. Blender: blender.org."

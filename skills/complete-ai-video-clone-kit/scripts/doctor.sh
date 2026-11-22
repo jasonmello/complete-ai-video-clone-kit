@@ -17,4 +17,6 @@ elif [ -x /Applications/Blender.app/Contents/MacOS/Blender ]; then ok blender "/
 else no blender "optional, only for 3D: blender.org"; fi
 if [ -d "$DIR/node_modules/puppeteer-core" ] || [ -d "$DIR/node_modules/puppeteer" ]; then ok puppeteer "installed"
 else no puppeteer "setup.sh runs npm install in scripts/"; fi
+if [ -d "$DIR/../remotion/node_modules/remotion" ]; then ok remotion "optional layer installed (Remotion License: free up to 3 people)"
+else info "remotion: optional (captions/titles). setup.sh --remotion installs it"; fi
 info "Google Flow and the voice-cloning tool are external services: nothing to install"

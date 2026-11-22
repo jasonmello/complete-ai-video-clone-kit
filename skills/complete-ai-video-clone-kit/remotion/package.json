@@ -1,0 +1,21 @@
+{
+  "name": "complete-ai-video-clone-kit-remotion",
+  "private": true,
+  "license": "Apache-2.0",
+  "description": "Optional Remotion layer: animated captions and titles rendered as transparent overlays. Remotion itself is under the Remotion License (free for individuals and companies of up to 3 people).",
+  "scripts": {
+    "studio": "remotion studio src/index.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@remotion/captions": "4.0.545",
+    "@remotion/cli": "4.0.545",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "remotion": "4.0.545"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.2",
+    "typescript": "5.9.3"
+  }
+}
