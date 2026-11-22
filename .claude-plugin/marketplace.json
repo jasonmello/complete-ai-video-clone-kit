@@ -1,0 +1,17 @@
+{
+  "name": "complete-ai-video-clone-kit",
+  "description": "Complete AI Video Clone Kit: one Claude Code skill that orchestrates ten free AI video tools to remake a reference video's editing structure.",
+  "owner": {
+    "name": "Jason Mello",
+    "url": "https://github.com/jasonmello"
+  },
+  "plugins": [
+    {
+      "name": "complete-ai-video-clone-kit",
+      "source": "./",
+      "description": "Remake a reference video's editing structure (cuts, beat, pacing) with your own material, using ten free AI video tools as one pipeline.",
+      "version": "0.1.0",
+      "license": "Apache-2.0"
+    }
+  ]
+}

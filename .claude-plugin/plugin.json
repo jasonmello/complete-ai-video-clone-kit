@@ -1,0 +1,22 @@
+{
+  "name": "complete-ai-video-clone-kit",
+  "version": "0.1.0",
+  "description": "Ten free AI video tools (yt-dlp, PySceneDetect, librosa, Whisper, Demucs, voice cloning, Google Flow, Blender, Puppeteer, FFmpeg) orchestrated as one pipeline that remakes a reference video's editing structure with your own material.",
+  "author": {
+    "name": "Jason Mello",
+    "url": "https://github.com/jasonmello"
+  },
+  "homepage": "https://github.com/jasonmello/complete-ai-video-clone-kit",
+  "repository": "https://github.com/jasonmello/complete-ai-video-clone-kit",
+  "license": "Apache-2.0",
+  "keywords": [
+    "video",
+    "ai-video",
+    "ffmpeg",
+    "whisper",
+    "demucs",
+    "reels",
+    "skill"
+  ],
+  "icon": ".claude-plugin/icon.png"
+}

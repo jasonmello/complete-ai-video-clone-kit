@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Syntax
+        run: |
+          S=skills/complete-ai-video-clone-kit/scripts
+          for f in $S/*.sh tests/*.sh; do bash -n "$f"; done
+          python3 -m py_compile $S/*.py tests/*.py
+          node --check $S/motion.mjs
+          python3 -c "import json,glob; [json.load(open(f)) for f in glob.glob('.claude-plugin/*.json') + glob.glob('$S/package.json')]"
+
+      - name: Docs cite only paths that exist
+        run: python3 tests/check_docs.py
+
+      - name: Smoke test (assemble + analyze)
+        run: bash tests/smoke.sh
+
+  secrets:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

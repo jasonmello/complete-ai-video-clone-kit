@@ -1,0 +1,7 @@
+{
+  "name": "complete-ai-video-clone-kit-motion",
+  "private": true,
+  "type": "module",
+  "license": "Apache-2.0",
+  "description": "Dependencies for motion.mjs. setup.sh installs puppeteer-core (local Chrome) or puppeteer, so none are pinned here."
+}

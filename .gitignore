@@ -1,0 +1,26 @@
+# secrets
+.env*
+!.env.example
+*.p8
+*.p12
+*.jks
+*.key
+*.pem
+
+# generated
+node_modules/
+__pycache__/
+*.pyc
+.venv/
+.DS_Store
+
+# video projects and test output never go in the repo
+/projects/
+/tests/_out/
+*.mp4
+*.mov
+*.wav
+*.m4a
+
+# setup.sh picks puppeteer or puppeteer-core per machine
+package-lock.json
