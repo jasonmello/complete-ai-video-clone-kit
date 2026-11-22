@@ -1,6 +1,6 @@
 """Fails if a doc cites a repository path or script that no longer exists.
 
-Checks markdown links to local files and backticked script names (e.g. `assemble.py`)
+Checks markdown links and <img> sources pointing to local files and backticked script names (e.g. `assemble.py`)
 in every tracked .md file. Run: python3 tests/check_docs.py
 """
 import re, sys
@@ -17,7 +17,8 @@ for md in ROOT.rglob("*.md"):
     if any(p in md.parts for p in ("node_modules", "_out", ".git")):
         continue
     text = md.read_text(encoding="utf-8")
-    for target in re.findall(r"\]\(([^)#\s]+)(?:#[^)]*)?\)", text):
+    links = re.findall(r"\]\(([^)#\s]+)(?:#[^)]*)?\)", text) + re.findall(r'<img[^>]+src="([^"]+)"', text)
+    for target in links:
         if target.startswith(("http://", "https://", "mailto:")):
             continue
         if not (md.parent / target).exists():

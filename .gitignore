@@ -24,3 +24,6 @@ __pycache__/
 
 # setup.sh picks puppeteer or puppeteer-core per machine
 package-lock.json
+
+# Remotion render cache
+skills/complete-ai-video-clone-kit/remotion/out/

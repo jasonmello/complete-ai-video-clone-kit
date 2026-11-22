@@ -24,6 +24,8 @@ flowchart LR
     CL -.-> BL[Blender<br/>3D]
     CL -.-> PP[Puppeteer<br/>motion graphics]
     CL -.-> VC[Voice cloning<br/>your own voice]
+    WH -.->|transcript| RM[Remotion · optional<br/>captions + titles]
+    RM -->|overlays| FF
     DM -->|stems| FF
     FL & BL & PP & VC -->|03_assets/| FF[FFmpeg<br/>assemble]
     CL -->|plan.json| FF
@@ -75,6 +77,23 @@ It all merges into `map.json`, plus one still frame per shot, so Claude can *see
 
 **6 · Check.** Run `analyze.py --video 04_render/final.mp4` and compare its summary with the reference.
 
+## Optional: Remotion layer (captions and titles)
+
+[Remotion](https://www.remotion.dev) (React-based video) adds what FFmpeg alone does badly: **word-by-word animated captions** made from the Whisper transcript, and **titles** with the same look as the Puppeteer template. Each renders as a transparent ProRes layer at the size and fps in `plan.json`. `assemble.py` composites them over the edit through `overlays`.
+
+```bash
+bash scripts/setup.sh --remotion                       # one-time install
+node scripts/remotion.mjs captions <project>           # → 03_assets/captions/captions.mov
+node scripts/remotion.mjs title <project> --title "Hi" --transparent
+```
+
+Why it is optional, not the default:
+- **License.** Remotion is source-available, not open source. It is free for individuals and companies of up to 3 people, and paid for larger companies, [including work made *for* them](https://www.remotion.dev/docs/license/pricing). The kit stays free for everyone without it.
+- **Speed.** It renders in a headless browser, which is much slower than FFmpeg for plain cuts. That's why FFmpeg stays the assembler.
+- **Telemetry.** Remotion renders report usage for licensing.
+
+The kit's caption and title components are its own code (Apache-2.0). They only depend on the `remotion` and `@remotion/captions` packages, installed from npm.
+
 ## Install
 
 Requirements: macOS or Linux, [uv](https://docs.astral.sh/uv/), Node 18+. Blender is optional (only for 3D).
@@ -114,10 +133,12 @@ Verified on macOS (Apple Silicon) on 2026-11-22:
 - Demucs: two stems.
 - FFmpeg assembly: 1080×1920, four clips, ducking.
 - Puppeteer: the motion template, using the local Chrome, including `--alpha` (ProRes 4444 with transparency).
+- Remotion: captions from a real Whisper transcript and a transparent title, both composited over a video with `overlays`.
+- Plugin install straight from GitHub (`/plugin marketplace add` + `/plugin install`).
 
-CI runs the assembly and the analysis on every push.
+CI runs the assembly (with an overlay), the analysis, and a Remotion caption render on every push.
 
-**Not verified yet:** the Blender template (Blender wasn't installed), the larger Whisper models, the plugin install command, and Windows.
+**Not verified yet:** the Blender template (Blender wasn't installed), the larger Whisper models, and Windows.
 
 ## Responsible use
 
@@ -188,6 +209,23 @@ Tudo vira o `map.json`, com um quadro de cada plano, para o Claude *ver* o que c
 
 **6 · Conferência.** Rode `analyze.py --video 04_render/final.mp4` e compare o resumo com o da referência.
 
+## Opcional: camada Remotion (legendas e títulos)
+
+O [Remotion](https://www.remotion.dev) (vídeo feito com React) cobre o que o FFmpeg sozinho faz mal: **legendas animadas palavra por palavra**, a partir da transcrição do Whisper, e **títulos** com o mesmo visual do modelo do Puppeteer. Cada um sai como uma camada ProRes transparente, no tamanho e fps do `plan.json`. O `assemble.py` sobrepõe essas camadas à edição pelo campo `overlays`.
+
+```bash
+bash scripts/setup.sh --remotion                       # instalação, uma vez só
+node scripts/remotion.mjs captions <project>           # → 03_assets/captions/captions.mov
+node scripts/remotion.mjs title <project> --title "Oi" --transparent
+```
+
+Por que é opcional, e não o padrão:
+- **Licença.** O Remotion tem código disponível, mas não é código aberto. É grátis para pessoa física e empresa de até 3 pessoas, e pago para empresas maiores, [inclusive para trabalho feito *para* elas](https://www.remotion.dev/docs/license/pricing). Sem ele, o kit continua grátis para todo mundo.
+- **Velocidade.** Ele renderiza num navegador sem janela, bem mais devagar que o FFmpeg em cortes simples. Por isso o FFmpeg continua sendo o montador.
+- **Telemetria.** Os renders do Remotion reportam uso por causa da licença.
+
+Os componentes de legenda e de título do kit são código próprio (Apache-2.0). Eles só dependem dos pacotes `remotion` e `@remotion/captions`, instalados pelo npm.
+
 ## Instalação
 
 Requisitos: macOS ou Linux, [uv](https://docs.astral.sh/uv/) e Node 18+. O Blender é opcional, só para 3D.
@@ -227,10 +265,12 @@ Verificado no macOS (Apple Silicon) em 22/11/2026:
 - Demucs: dois stems.
 - Montagem no FFmpeg: 1080×1920, quatro clipes, com ducking.
 - Puppeteer: o modelo de motion, usando o Chrome local, inclusive o `--alpha` (ProRes 4444 com transparência).
+- Remotion: legendas a partir de uma transcrição real do Whisper e um título transparente, os dois sobrepostos a um vídeo com `overlays`.
+- Instalação como plugin direto do GitHub (`/plugin marketplace add` + `/plugin install`).
 
-O CI roda a montagem e a análise a cada push.
+O CI roda a montagem (com uma camada sobreposta), a análise e um render de legenda no Remotion a cada push.
 
-**Ainda não verificado:** o modelo do Blender (o Blender não estava instalado), os modelos maiores do Whisper, o comando de instalação como plugin e o Windows.
+**Ainda não verificado:** o modelo do Blender (o Blender não estava instalado), os modelos maiores do Whisper e o Windows.
 
 ## Uso responsável
 

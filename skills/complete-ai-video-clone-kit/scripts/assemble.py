@@ -5,7 +5,8 @@
 """Stage 5: render <project>/plan.json into the final video with ffmpeg.
 
 Still images get a camera move (zoom/pan), video clips are trimmed and cropped to the frame,
-audio tracks are mixed and any track marked "voice" ducks the others while it plays.
+transparent overlays (captions, titles) are composited on top, audio tracks are mixed, and any
+track marked "voice" ducks the others while it plays.
 
 usage: uv run assemble.py <project> [--plan other.json] [--show-command]
 """
@@ -73,7 +74,17 @@ def main():
             f = f"[{idx}:v]scale={W}:{H}:force_original_aspect_ratio=increase,crop={W}:{H},fps={fps}"
         f += f",trim=end_frame={n},setpts=PTS-STARTPTS,setsar=1,format=yuv420p[v{k}]"
         filters.append(f); labels.append(f"[v{k}]"); idx += 1; total += n / fps
-    filters.append(f"{''.join(labels)}concat=n={len(labels)}:v=1:a=0[vout]")
+    filters.append(f"{''.join(labels)}concat=n={len(labels)}:v=1:a=0[base0]")
+
+    # overlays: transparent layers (e.g. Remotion captions/titles as ProRes 4444 .mov) on top of the edit
+    base = "base0"
+    for k, ov in enumerate(plan.get("overlays", [])):
+        args += ["-i", path(ov["file"])]
+        at = float(ov.get("at", 0))
+        filters.append(f"[{idx}:v]scale={W}:{H},fps={fps},format=yuva420p,setpts=PTS-STARTPTS+{at}/TB[ov{k}]")
+        filters.append(f"[{base}][ov{k}]overlay=eof_action=pass:format=auto[base{k + 1}]")
+        base = f"base{k + 1}"; idx += 1
+    filters.append(f"[{base}]format=yuv420p[vout]")
 
     music, voices = [], []
     for t, track in enumerate(plan.get("audio", [])):
